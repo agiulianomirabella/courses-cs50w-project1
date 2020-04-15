@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Error
+{% endblock %}
+
+{% block body %}
+    <h1>Error</h1>
+
+    {{ email }} already is accociated to an account!
+
+    Click <a href="{{ url_for('index') }}">here</a> to log in.
+{% endblock %}

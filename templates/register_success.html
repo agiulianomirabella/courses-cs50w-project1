@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Welcome!
+{% endblock %}
+
+{% block body %}
+    <h1>Welcome {{ name }}</h1>
+    Your account has succesfully been created! <a href="{{ url_for('search') }}">Search</a> new books!.
+{% endblock %}
