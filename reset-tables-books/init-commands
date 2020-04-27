@@ -1,3 +1,0 @@
-cd C:\Users\A. Giuliano\Desktop\trabajo-extra\cursos-extra\cs50w\courses-cs50w-project1\reset-tables-books
-set FLASK_APP=application.py && set FLASK_DEBUG=1 && set DATABASE_URL=postgres://wfwoewdbugkurk:85896f0531941d15a43b9b864b47376882347a56b7d19161fb044850141b8ebe@ec2-54-217-204-34.eu-west-1.compute.amazonaws.com:5432/d2ldkrsktl45l4
-flask run

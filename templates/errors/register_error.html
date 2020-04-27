@@ -6,7 +6,8 @@
 
 {% block body %}
     <h1>Error</h1>
+ 
+    {{ message }}
 
-    The password is not correct, please <a href="{{ url_for('index') }}">try again</a>.
-
+    <a href="{{ url_for('register') }}">Click here</a> to try again.
 {% endblock %}

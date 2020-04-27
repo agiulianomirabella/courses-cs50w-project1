@@ -1,19 +1,32 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    {{ book.title  }}
+{{ book.title  }}
 {% endblock %}
 
 {% block body %}
-    <h1>{{ book.title }}</h1>
-    <h2>{{ book.author }}</h2>
-    <h3>{{ book.isbn }}</h3>
+<h1>{{ book.title }}</h1>
+<h2>{{ book.author }}</h2>
+<h3>{{ book.isbn }}</h3>
+<hr>
+<div>
+    <h2>Book reviews:</h2>
+    <ul>
+        {% for review in reviews %}
+        <li>
+            Score: {{ review.rating }} <br>
+            Text: {{ review.text }}
+            <hr>
+        </li>
+        {% endfor %}
+    </ul>
 
-    <div>
-        Book info:
-    </div>
 
-    <div>
-        <a href="{{ url_for('search') }}">Search another Book</a>.
-    </div>
+</div>
+
+
+
+<div>
+    <a href="{{ url_for('search') }}">Search another Book</a>.
+</div>
 {% endblock %}
