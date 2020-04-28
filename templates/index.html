@@ -1,24 +1,24 @@
-{% extends "layout.html" %}
+{% extends "layout_nologout.html" %}
 
 {% block title %}
-    Welcome to 
+Website name
 {% endblock %}
 
 {% block body %}
-    <h1>Welcome to </h1>
-    Please log in or register if you don't have an account yet.
+<h1>Welcome to </h1>
+Please log in or register if you don't have an account yet.
 
-    <form action="{{ url_for('login') }}" method="post">
+<form action="{{ url_for('login') }}" method="post">
 
-        <div class="form-group">
-            <input class="form-control" name="username" placeholder="username or email">
-            <input class="form-control" name="password" placeholder="password">
-        </div>
+    <div class="form-group">
+        <input class="form-control" name="username" placeholder="username or email">
+        <input class="form-control" name="password" placeholder="password">
+    </div>
 
-        <div class="form-group">
-            <button class="btn btn-primary">Log in</button>
-        </div>
-    </form>
+    <div class="form-group">
+        <button class="btn btn-primary">Log in</button>
+    </div>
+</form>
 
-    Don't have an account yet? <a href="{{ url_for('register_form') }}">Register</a>.
+Don't have an account yet? <a href="{{ url_for('register_form') }}">Register</a>.
 {% endblock %}

@@ -1,0 +1,14 @@
+{% extends "layout_nologout.html" %}
+
+{% block title %}
+    Logout
+{% endblock %}
+
+{% block body %}
+    <h1>Sorry to see you go :(</h1>
+
+    Come back soon!
+    <hr>
+
+    Go to <a href="{{ url_for('index') }}">main</a> page.
+{% endblock %}

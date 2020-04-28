@@ -6,8 +6,6 @@
 
 {% block body %}
     <h1>Error</h1>
- 
     {{ message }}
-
-    <a href="{{ url_for('register_form') }}">Click here</a> to try again.
+    Click <a href="{{ url_for('book', book_id=book.id) }}">here</a> to try again.
 {% endblock %}

@@ -5,8 +5,6 @@ from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-from models import *
-
 app = Flask(__name__)
 
 # Check for environment variable
@@ -17,14 +15,6 @@ if not os.getenv("DATABASE_URL"):
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
-
-#no se si esto va aquí
-# Tell Flask what SQLAlchemy databas to use.
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-# Link the Flask app with the database (no Flask app is actually being run yet).
-db.init_app(app)
 
 # Set up database
 engine = create_engine(os.getenv("DATABASE_URL"))
@@ -47,22 +37,27 @@ def register():
         password = int(request.form.get("password"))
         password1 = int(request.form.get("password1"))
 
+        if "" in [name, email, username, password, password1]:
+            return render_template("errors/register_error.html", message="Please dont't leave blank spaces.")
+
         if password != password1:
-            return render_template("errors/register_error.html", message="Passwords don't match. Please try again")
+            return render_template("errors/register_error.html", message="Passwords don't match. Please try again.")
 
         #check if email is already in db
-        user1 = User.query.filter_by(email = email).first()
+        user1 = db.execute("SELECT * FROM users WHERE email = :email", {"email": email}).fetchone()
         if user1 is not None:
-            return render_template("errors/register_error1.html", email="{}".format(email))
+            return render_template("errors/register_error_email.html", email="{}".format(email))
 
-        user2 = User.query.filter_by(username = username).first()
+        #check if username already exists
+        user2 = db.execute("SELECT * FROM users WHERE username = :username", {"username": username}).fetchone()
         if user2 is not None:
-            return render_template("errors/register_error.html", message="{} username already exists. Please try with another username".format(username))
+            return render_template("errors/register_error.html", message="{} username already exists. Please try with another username.".format(username))
         
         #inserting the new user into the db:
-        user = User(name=name, email=email, username=username, password=password)
-        db.session.add(user)
-        db.session.commit()
+        db.execute("INSERT INTO users (name, email, username, password) VALUES (:name, :email, :username, :password)",
+            {"name":name, "email":email, "username":username, "password":password}
+        )
+        db.commit()
 
     except ValueError:
         return render_template("errors/register_error.html", message="Something went wrong, please introduce a name, username and password to register")
@@ -73,7 +68,7 @@ def login():
     try:
         username = request.form.get("username")
         password = int(request.form.get("password"))
-        user = User.query.filter_by(username=username).first()
+        user = db.execute("SELECT * FROM users WHERE username = :username", {"username": username}).fetchone()
 
         if user is None:
             return render_template("errors/login_error.html", message="Sorry, there is no user with such username. Please try again")
@@ -87,33 +82,62 @@ def login():
     session["id"] = user.id
     return render_template("successes/login_success.html", name = user.name)
 
+@app.route("/logout", methods= ["POST"])
+def logout():
+    session["id"] = None
+    return render_template("logout.html")
+
 @app.route("/search")
 def search():
     return render_template("search.html")
 
-@app.route("/books", methods=["POST"])
+@app.route("/books", methods= ["POST"])
 def books():
     books = []
     try:
-        title = request.form.get('title')
-        author = request.form.get('author')
+        title = request.form.get('title').lower()
+        author = request.form.get('author').lower()
         isbn = request.form.get('isbn')
-        books = books + Book.query.filter_by(title = title).all()
-        books = books + Book.query.filter_by(author = author).all()
-        books = books + Book.query.filter_by(isbn = isbn).all()
-        if not books:
-            return render_template("errors/search_error.html", message= "No book with such properties.")
-        return render_template("books.html", books = books)
     except ValueError:
         return render_template("errors/search_error.html", message= "We are sorry, something went wrong.")
+    if title != "":
+        books = books + db.execute("SELECT * FROM books WHERE lower(title) LIKE '%{}%'".format(title)).fetchall()
+    if author != "":
+        books = books + db.execute("SELECT * FROM books WHERE lower(author) LIKE '%{}%'".format(author)).fetchall()
+    if isbn != "":
+        books = books + db.execute("SELECT * FROM books WHERE isbn LIKE '%{}}%'".format(isbn)).fetchall()
+    if not books:
+        return render_template("errors/search_error.html", message= "No book with such properties.")
+    return render_template("books.html", books = books)
 
 @app.route("/books/<int:book_id>")
 def book(book_id):
-    book = Book.query.get(book_id)
+    book = db.execute("SELECT * FROM books WHERE id = :id", {"id": book_id}).fetchone()
     if book is None:
         return render_template("errors/search_error.html", message= "We are soory, there's no such book.")
-    reviews = Review.query.filter_by(book_id = book_id).all()
+
+    reviews = db.execute(
+        "SELECT reviews.*, users.username FROM reviews JOIN users ON reviews.user_id = users.id WHERE book_id = :book_id",
+        {"book_id": book_id}).fetchall()
     return render_template("book.html", book = book, reviews = reviews)
+
+@app.route("/submit_review/<int:book_id>", methods=["POST"])
+def submit_review(book_id):
+    try:
+        rating = int(request.form.get('rating'))
+        text = request.form.get('text')
+    except ValueError:
+        return render_template("errors/review_errors.html", message= "Something went wrong.")
+    
+    exists = db.execute("SELECT * FROM reviews WHERE user_id = {} AND book_id = {}".format(session["id"], book_id)).fetchone()
+    if not (exists is None):
+        book = db.execute("SELECT * FROM books WHERE id = :book_id", {"book_id":book_id}).fetchone()
+        return render_template("errors/review_error.html", message= "Sorry, you can't submit two reviews for the same book.", book= book)
+    
+    db.execute("INSERT INTO reviews (rating, text, user_id, book_id) VALUES (:rating, :text, :user_id, :book_id)", {"rating":rating, "text":text, "user_id":session["id"], "book_id":book_id})
+    db.commit()
+    book = db.execute("SELECT * FROM books WHERE id = :book_id", {"book_id":book_id}).fetchone()
+    return render_template("successes/review_success.html", book= book)
 
 
 '''
