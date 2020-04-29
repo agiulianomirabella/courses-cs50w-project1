@@ -28,7 +28,7 @@ def create_tables():
     db.commit()
 
 def insert_books():
-    f = open("csv-files/booksTest.csv")
+    f = open("csv-files/books.csv")
     reader = csv.reader(f)
     for isbn, title, author, year in reader:
         db.execute(
@@ -61,7 +61,7 @@ def check_tables():
     books = db.execute("SELECT * FROM books").fetchall()
     users = db.execute("SELECT * FROM users").fetchall()
     reviews = db.execute("SELECT * FROM reviews").fetchall()
-
+'''
     print("\nBOOKS:")
     for book in books:
         print("BOOK: {} INSERTED SUCCSESSFULLY".format(book.id))
@@ -73,6 +73,7 @@ def check_tables():
         print("REVIEW: {} INSERTED SUCCSESSFULLY".format(review.id))
     print()
 
+'''
 def main():
     delete_tables()
     create_tables()
