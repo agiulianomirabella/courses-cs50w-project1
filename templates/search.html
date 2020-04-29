@@ -1,13 +1,13 @@
 {% extends "layout.html" %}
 
 {% block title %}
-{{name}}
+    Search
 {% endblock %}
 
 {% block body %}
 <h1>Search a book</h1>
 
-You can search books by title, author, or even the ISBN code.
+You can search books by title, author, or ISBN code.
 <hr>
 
 <form action="{{ url_for('books') }}" method="post">

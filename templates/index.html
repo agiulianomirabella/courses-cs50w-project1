@@ -1,17 +1,16 @@
-{% extends "layout_nologout.html" %}
+{% extends "layout_zero.html" %}
 
 {% block title %}
-Website name
+    Review4You
 {% endblock %}
 
 {% block body %}
-<h1>Welcome to </h1>
-Please log in or register if you don't have an account yet.
+<h1>Review4You</h1>
+Please log in or register if you don't have an account yet. <br>
 
 <form action="{{ url_for('login') }}" method="post">
-
     <div class="form-group">
-        <input class="form-control" name="username" placeholder="username or email">
+        <input class="form-control" name="username" placeholder="username">
         <input class="form-control" name="password" placeholder="password">
     </div>
 

@@ -1,0 +1,41 @@
+{% extends "layout_zero.html" %}
+
+{% block title %}
+    Account
+{% endblock %}
+
+{% block body %}
+<h1>{{ user.name }} </h1>
+<hr>
+username: {{ user.username }} <br>
+pasword: {{ user.password }}
+<hr>
+<div>
+    <h2>Books reviewed:</h2>
+    <ul>
+        {% for r in reviewed %}
+        <li>
+            <a href="{{ url_for('book', book_id=r.book_id) }}">{{ r.title }}</a>: <br>
+            Score: {{ r.rating }} <br>
+            Text: {{ r.text }}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div>
+    <hr>
+    <a href="{{ url_for('search') }}">Search more books</a>.
+</div>
+
+<hr>
+
+<div class="d-flex flex-row-reverse">
+    <form action="{{ url_for('logout') }}" method="post">
+        <div class="form-group">
+            <button class="btn btn-danger">Logout</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

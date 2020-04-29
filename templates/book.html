@@ -1,22 +1,25 @@
 {% extends "layout.html" %}
 
 {% block title %}
-{{ book.title  }}
+    {{ book.title  }}
 {% endblock %}
 
 {% block body %}
-<h1>{{ book.title }}</h1>
-<h2>{{ book.author }}</h2>
-<h3>ISBN: {{ book.isbn }}</h3>
+<h1>{{ book.title }},</h1>
+<h5>{{ book.author }}</h3>
+<h5>ISBN: {{ book.isbn }}</h5>
+{% if available %}
+    <h5>Goodreads average rating: {{ avg }}</h5>
+{% endif %}
 <hr>
 <div>
-    <h2>Book reviews:</h2>
+    <h2>Reviews:</h2>
     <ul>
         {% for review in reviews %}
         <li>
-            <h6>{{ review.username }}:</h6>
+            <h6>{{ review.username }} said:</h6>
             Score: {{ review.rating }} <br>
-            Text: {{ review.text }}
+            {{ review.text }}
             <hr>
         </li>
         {% endfor %}
@@ -24,10 +27,10 @@
 </div>
 
 <div>
-    <h3>Submit your review</h3>
-    <form action="{{ url_for('submit_review', book_id=book.id) }}" method="post">
+    <h2>Submit your review</h2>
+    <form action="{{ url_for('book', book_id=book.id) }}" method="post">
 
-        <h5>Your rating:</h5>
+        <h6>Rate:</h6>
         <div class="form-group">
             <select class="form-control" name="rating">
                 <option value="1">1</option>
@@ -39,9 +42,9 @@
             <hr>
         </div>
 
-        <h5>Your opinion:</h5>
+        <h6>Comments:</h6>
         <div class="form-group">
-            <input class="form-control" name="text" placeholder="In my opinion, ..">
+            <input class="form-control" name="text" placeholder="In my opinion, ...">
             <hr>
         </div>
 

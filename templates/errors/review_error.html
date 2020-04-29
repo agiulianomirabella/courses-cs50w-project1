@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Error</h1>
-    {{ message }}
-    Click <a href="{{ url_for('book', book_id=book.id) }}">here</a> to try again.
+    <h1>Sorry,</h1>
+    {{ message }} <br>
+    Go back to <a href="{{ url_for('book', book_id=book.id) }}">{{ book.title }}</a>.
 {% endblock %}
